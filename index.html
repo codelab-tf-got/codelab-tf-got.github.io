@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>who-will-die-got-tensorflow-codelab</title>
+    <title>Discover what GOT Character will die next with TensorFlow</title>
     <meta name="description" content="who-will-die-got-tensorflow-codelab description">
 
     <!-- See https://goo.gl/OOhYW5 -->
@@ -12,9 +12,104 @@
 
     <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
-    <link rel="import" href="/src/got-codelab-app/got-codelab-app.html">
+    <link rel="import" href="/bower_components/codelab-components/google-codelab-elements.html">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+    <style>
+      body {
+        font-family: "Roboto",sans-serif;
+        background-color: #e0e0e0;
+      }
+    </style>
   </head>
   <body>
-    <got-codelab-app></got-codelab-app>
+
+  <google-codelab 
+      title="Discover what GOT Character will die next with TensorFlow"
+      environment="web"
+      feedback-link="https://github.com/baenans/who-will-die-got-tensorflow-codelab/issues"
+      last-updated="2016-12-01">
+
+    <!-- STEP 1 -->
+    <google-codelab-step 
+      label="Introduction" 
+      step="1" 
+      duration="5">
+      <p>
+      <a href="http://tensorflow.org/">TensorFlow</a> is a an open source library for numerical computation, specializing in machine learning applications. In this codelab, you will learn how to install and run TensorFlow on a single machine, and will predict deaths on Game of Thrones data using the tutorial Wide+Deep Learning Network.</p>
+      <h2>What are we going to be building?</h2>
+      <p>
+      In this lab, we combine the strengths of Wide and Deep Neural Network modelling to produce a prediction model on whether a Game of Thrones character may die.</p>
+      <h2 class="checklist">What You&#39;ll Learn</h2>
+
+      <ul class="checklist">
+        <li>Familiarize yourself with Tensorflow  </li>
+        <li>How to select features for the wide part: choose the sparse base columns and crossed columns you want to use.</li>
+        <li>Select features for the deep part: choose the continuous columns, the embedding dimension for each categorical column, and the hidden layer sizes.</li>
+        <li>How to design the Wide+Deep Learning TensorFlow model </li>
+        <li>Put them all together in a Wide & Deep model (DNNLinearCombinedClassifier).</li>
+      </ul>
+
+      <h2 class="checklist">What you need</h2>
+      <ul class="checklist">
+        <li>A basic understanding of python and neural nets</li>
+        <li>A fast computer running OS X or Linux</li>
+        <li>A fair amount of time</li>
+      </ul>
+
+      <h2 class="checklist">What is the goal</h2>
+      <ul class="checklist">
+        <li>To made a classification model </li>
+        <li>Predict the next character death probability in Game of Thrones</li>
+      </ul>
+
+    </google-codelab-step>
+
+    <!-- STEP 2 -->
+    <google-codelab-step 
+      label="Setup" 
+      step="2" 
+      duration="5">
+
+      <h2>Title...</h2>
+      <p>Content</p>
+
+    </google-codelab-step>
+
+    <!-- STEP 3 -->
+    <google-codelab-step 
+      label="Data" 
+      step="3" 
+      duration="5">
+
+      <h2>Title...</h2>
+      <p>Content</p>
+
+    </google-codelab-step>
+
+    <!-- STEP 4 -->
+    <google-codelab-step 
+      label="Combining Wide and Deep Models into One" 
+      step="4" 
+      duration="5">
+
+      <h2>Title...</h2>
+      <p>Content</p>
+
+    </google-codelab-step>
+
+    <!-- STEP 5 -->
+    <google-codelab-step 
+      label="Conclusions" 
+      step="5" 
+      duration="5">
+
+      <h2>Title...</h2>
+      <p>Content</p>
+
+    </google-codelab-step>
+
+
+  </google-codelab>
+    
   </body>
 </html>
