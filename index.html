@@ -200,63 +200,83 @@ pip3 install --upgrade $TF_BINARY_URL
 
     </google-codelab-step>
 
-    <!-- STEP 2 -->
-    <google-codelab-step 
-      label="Setup" 
-      step="2" 
-      duration="5">
-
-      <h2>Title...</h2>
-      <p>Content</p>
-
-      <!-- A DOWNLOAD ASSETS BUTTON -->
-      <p>
-        <a href="https://your-link-to-download.es" target="_blank" rel="noopener">
-          <paper-button class="colored x-scope paper-button-0" raised="" role="button" tabindex="0" animated="" aria-disabled="false" elevation="1">
-          <iron-icon icon="file-download" class="x-scope iron-icon-0"><svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" class="style-scope iron-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g class="style-scope iron-icon"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" class="style-scope iron-icon"></path></g></svg>
-          </iron-icon>Download Zip</paper-button>
-        </a>
-      </p>
-
-      <!-- A CODE SNIPPET EXAMPLE -->
-      <p>The following is a code snippet example:</p>
-      <pre><code>git clone https://github.com/gdg.es/we-the-community.git</code></pre>
-
-      <!-- ORDERED LISTS -->
-      <p>You can also write ordered lists (and split em') as follows:</p>
-      <ol type="1" start="1">
-        <li>Step 1</li>
-        <li>Step 2</li>
-      </ol>
-
-      <p>As you saw, the attribute <code>start</code> indicates what step should the ordered list start from. We are going to start from the 3rd one later on, as follows:</p>
-      <ol type="1" start="3">
-        <li>Install Tensorflow Blahblah</li>
-      </ol>
-
-      <!-- ASIDE -->
-      <aside class="special">
-        <p>
-        <strong>Note:</strong> lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-      </aside>
-
-    </google-codelab-step>
-
     <!-- STEP 3 -->
     <google-codelab-step 
       label="Data" 
       step="3" 
       duration="5">
 
-      <h2>Title...</h2>
-      <p>Content</p>
+      <h2>Categorical and Continuous Variables</h2>
+      <p>Categorical variables are also known as discrete or qualitative variables. Categorical variables can be further categorized as either nominal, ordinal or dichotomous. Nominal variables are variables that have two or more categories, but which do not have an intrinsic order.</p>
 
+      <p>The CSV takes an expanded view on character deaths from GOT, including the listed columns that give an overall basic information such as name, title, age and date of Birth. But also dives into the the alive relationships that the character holds, the book in which the character appears</p>
+<aside class="special">
+<p>We are going to take care of the following:</p>
+      <p>“S.No, Alive, Name , Title, male, culture, dateOfBirth, mother, father, heir, house, spouse, book1, book2, book3, book4, book5, isAliveMother, isAliveFather, isAliveHeir, isAliveSpouse, isMarried, isNoble , age, numDeadRelations, boolDeadRelations, isPopular, popular, isAlive”</p>
+</aside>
+      <p>
+        Note that not all columns of the dataset have been selected for this tutorial. There have been some excluded data due to the relevance or not for this exercise.
+      </p>
+
+<pre><code>
+CATEGORICAL_COLUMNS = ["alive", "title", "male", "culture",
+                       "house", "spouse", "isAliveMother", "isAliveFather", "isAliveHeir",
+                       "isAliveSpouse", "isMarried", "isNoble", "numDeadRelations",
+                       "boolDeadRelations", "isPopular" , "popularity"]
+
+CONTINUOUS_COLUMNS = ["name", "dateOfBirth",  "mother", "father",
+                      "heir", "book1", "book2", "book3", "book4", "book5", "age",
+                      "isAlive", "house", "title", "numDeadRelations"]
+</code></pre>
+
+      <h2>Define Base Feature Columns</h2>
+      <p>First, let's define the base categorical and continuous feature columns that we'll use. These base columns will be the building blocks used by both the wide part and the deep part of the model.</p>
+<pre><code>
+# Generalizing  Transformations 
+...
+column[i] = tf.contrib.layers.real_valued_column(column_name)
+...
+age_buckets = tf.contrib.layers.bucketized_column(age,
+                                                  boundaries=[
+                                                      18, 25, 30, 35, 40, 45,
+                                                      50, 55, 60, 65
+                                                  ])
+</code></pre>
+
+      <h2>The Wide Model: Linear Model with Crossed Feature Columns</h2>
+      <p>The wide model is a linear model with a wide set of sparse and crossed feature columns:</p>
+<pre><code>
+# Wide columns and deep columns.
+wide_columns = [name, dateOfBirth, DateoFdeath, mother, father, heir, book1, book2,
+                book3, book4, book5, age, isAlive
+                tf.contrib.layers.crossed_column([house, title],
+                                                 hash_bucket_size=int(1e4)),
+                tf.contrib.layers.crossed_column(
+                    [age_buckets, house, title],
+                    hash_bucket_size=int(1e6)),
+                tf.contrib.layers.crossed_column([numDeadRelations, title],
+                                                 hash_bucket_size=int(1e4))]
+
+</code></pre>
+
+ <h2>The Deep Model: Neural Network with Embeddings</h2>
+      <p>The deep model is a feed-forward neural network, as shown in the previous figure. Each of the sparse, high-dimensional categorical features are first converted into a low-dimensional and dense real-valued vector, often referred to as an embedding vector. These low-dimensional dense embedding vectors are concatenated with the continuous features, and then fed into the hidden layers of a neural network in the forward pass:</p>
+<pre><code>
+  deep_columns = [
+      tf.contrib.layers.embedding_column(title, dimension=8),
+      tf.contrib.layers.embedding_column(house, dimension=8),
+      tf.contrib.layers.embedding_column(culture, dimension=8),
+      tf.contrib.layers.embedding_column(isAliveNoble, dimension=8),
+      tf.contrib.layers.embedding_column(numberDeadRelations,
+                                         dimension=8),
+      tf.contrib.layers.embedding_column(popularity, dimension=8),
+      male,
+      spouse,
+      isPopular,
+      spouse,
+      isMarried,
+  ]
+</code></pre>
     </google-codelab-step>
 
     <!-- STEP 4 -->
@@ -265,8 +285,19 @@ pip3 install --upgrade $TF_BINARY_URL
       step="4" 
       duration="5">
 
-      <h2>Title...</h2>
-      <p>Content</p>
+
+      <p>The wide models and deep models are combined by summing up their final output log odds as the prediction, then feeding the prediction to a logistic loss function. All the graph definition and variable allocations have already been handled for you under the hood, so you simply need to create a DNNLinearCombinedClassifier:</p>
+
+      <pre><code>
+import tempfile
+model_dir = tempfile.mkdtemp()
+m = tf.contrib.learn.DNNLinearCombinedClassifier(
+    model_dir=model_dir,
+    linear_feature_columns=wide_columns,
+    dnn_feature_columns=deep_columns,
+    dnn_hidden_units=[100, 50])
+
+      </code></pre>
 
     </google-codelab-step>
 
@@ -275,9 +306,11 @@ pip3 install --upgrade $TF_BINARY_URL
       label="Conclusions" 
       step="5" 
       duration="5">
-
-      <h2>Title...</h2>
-      <p>Content</p>
+      <ol>
+<li>The accuracy of the model</li>
+<li>How changing the parameters influences the accuracy of the model, training_steps or...</li>
+<li>Testing character</li>
+      </ol>
 
     </google-codelab-step>
 
