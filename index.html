@@ -54,15 +54,15 @@
         <li>Put them all together in a Wide & Deep model (DNNLinearCombinedClassifier).</li>
       </ul>
 
-      <h2 class="checklist">What you need</h2>
-      <ul class="checklist">
+      <h2 class="checklist">What You&#39;ll Need</h2>
+      <ul>
         <li>A basic understanding of python and neural nets</li>
         <li>A fast computer running OS X or Linux</li>
         <li>A fair amount of time</li>
       </ul>
 
-      <h2 class="checklist">What is the goal</h2>
-      <ul class="checklist">
+      <h2 class="checklist">The Goal</h2>
+      <ul>
         <li>To made a classification model </li>
         <li>Predict the next character death probability in Game of Thrones</li>
       </ul>
@@ -72,6 +72,131 @@
         <strong>Note:</strong>  This codelab has quiet periods of downloading and training. During those times, it might be a fun idea to play with the <a href="http://playground.tensorflow.org/" target="_blank" rel="noopener">TensorFlow Playground!</a>
         </p>
       </aside>
+
+    </google-codelab-step>
+
+
+    <google-codelab-step 
+      label="Setup" 
+      step="2" 
+      duration="5">
+
+      <h2>On a Docker Image</h2>
+
+      <p>if you were going to perform image processing, GPU enabled installation...?. For more information, visit <a href="https://www.tensorflow.org/versions/r0.12/get_started/os_setup.html#docker-installation" target="_blank" rel="noopener">the Docker installation guideliness in the TensorFlow documentation.</a></p>
+
+      <h2>Using virtualenv</h2>
+      <p>
+        As we are not going to process images, we recommend for this codelab virtualenv installation, because it will take you less time – if you were going to perform image processing, GPU enabled installation would be worth it.
+      </p>
+      <aside class="special">
+        <p>
+          <strong>What are pip and virtualenv?</strong>
+        </p>
+        <p>
+          <a href="https://pip.pypa.io/en/stable/" target="_blank" rel="noopener">pip</a> is a Python's package management tool, and <a href="http://docs.python-guide.org/en/latest/dev/virtualenvs/" target="_blank" rel="noopener">virtualenv</a> is just a tool to keep the dependencies required by different Python projects in separate places. The Virtualenv installation of TensorFlow will not override pre-existing version of the Python packages needed by TensorFlow.
+        </p>
+      </aside>
+
+      <p>
+        With <code>virtualenv</code> the installation process is the following:
+      </p>
+
+      <ol>
+        <li>Install <code>pip</code> and <code>virtualenv</code>.</li>
+        <li>Create a <code>virtualenv</code> environment.</li>
+        <li>Activate the <code>virtualenv</code> environment and install TensorFlow in it.</li>
+        <li>After the install you will activate the <code>virtualenv</code> environment each time you want to use TensorFlow.</li>
+      </ol>
+
+      <h2>Install pip and virtualenv</h2>
+<pre><code>
+# For Ubuntu/Linux 64-bit
+sudo apt-get install python-pip python-dev python-virtualenv
+
+# For Mac OS X
+sudo easy_install pip
+sudo pip install --upgrade virtualenv
+</code></pre>
+
+      <h2>Create a Virtualenv environment</h2>
+      <p>Create a <code>virtualenv</code> environment in the directory <code>~/tensorflow</code> (for Linux & MacOS):</p>
+      <pre><code>virtualenv --system-site-packages ~/tensorflow</code></pre>
+
+      <h2>Activate the environment</h2>
+<pre><code>
+# if you are using bash
+source ~/tensorflow/bin/activate
+
+# if you are using csh
+source ~/tensorflow/bin/activate.csh
+</code></pre>
+
+  <h2>Install TensorFlow in the environment</h2>
+  <p>Now that you have created the environment, install TensorFlow just as you would for a regular <code>pip</code> installation.</p>
+
+  <aside class="special">
+        <p>
+          <strong>Choose the right binary to install</strong>
+        </p>
+        <p>
+          Depending on your <strong>system architecture</strong> and <strong>python's version</strong>, you will need one or another version of the binaries. We'll just add an environtmen variable <code>TF_BINARY_URL</code> that will contain the address where the binary is located, and then use <code>python</code> to install it. For a complete/updated list, visit <a href="https://www.tensorflow.org/versions/r0.12/get_started/os_setup.html#virtualenv-installation" target="_blank" rel="noopener">TensorFlow's installing guideliness</a>.
+        </p>
+        <p>
+          To figure out your python's version, simply type in <code>python -V</code>.</p>
+      </aside>
+<p>Copy the version that fit's your architecture and python's version:</p>
+<pre><code>
+# Ubuntu/Linux 64-bit, CPU only, Python 2.7
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp27-none-linux_x86_64.whl
+
+# Ubuntu/Linux 64-bit, GPU enabled, Python 2.7
+# Requires CUDA toolkit 8.0 and CuDNN v5. For other versions, see "Installing from sources" below.
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-0.12.0rc0-cp27-none-linux_x86_64.whl
+
+# Mac OS X, CPU only, Python 2.7:
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-0.12.0rc0-py2-none-any.whl
+
+# Mac OS X, GPU enabled, Python 2.7:
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/gpu/tensorflow_gpu-0.12.0rc0-py2-none-any.whl
+
+# Ubuntu/Linux 64-bit, CPU only, Python 3.4
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp34-cp34m-linux_x86_64.whl
+
+# Ubuntu/Linux 64-bit, GPU enabled, Python 3.4
+# Requires CUDA toolkit 8.0 and CuDNN v5. For other versions, see "Installing from sources" below.
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-0.12.0rc0-cp34-cp34m-linux_x86_64.whl
+
+# Ubuntu/Linux 64-bit, CPU only, Python 3.5
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp35-cp35m-linux_x86_64.whl
+
+# Ubuntu/Linux 64-bit, GPU enabled, Python 3.5
+# Requires CUDA toolkit 8.0 and CuDNN v5. For other versions, see "Installing from sources" below.
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-0.12.0rc0-cp35-cp35m-linux_x86_64.whl
+
+# Mac OS X, CPU only, Python 3.4 or 3.5:
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-0.12.0rc0-py3-none-any.whl
+
+# Mac OS X, GPU enabled, Python 3.4 or 3.5:
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/gpu/tensorflow_gpu-0.12.0rc0-py3-none-any.whl
+</code></pre>
+<p>If your requirement's are listed above, you can also check out the <a href="https://www.tensorflow.org/versions/r0.12/get_started/os_setup.html#installing-from-sources" target="_blank" rel="noopener">installing from sources section</a> in TensorFlow's installing guideliness.</p>
+
+<h2>Finally, install TensorFlow</h2>
+
+<p>Once you have setted the <code>$TF_BINARY_URL</code> env variable with the url of the binary that fits your system, simply install it with <code>pip</code></p>
+
+<pre><code>
+# Python 2
+pip install --upgrade $TF_BINARY_URL
+
+# Python 3
+pip3 install --upgrade $TF_BINARY_URL
+</code></pre>
+<aside class="special">
+<p>Now you are all set-up, and ready to start rocking with TensorFlow!</p></aside>
+      
+
 
     </google-codelab-step>
 
