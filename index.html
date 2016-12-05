@@ -204,10 +204,12 @@ pip3 install --upgrade $TF_BINARY_URL
 
     <!-- STEP 3 -->
     <google-codelab-step 
-      label="Data" 
+      label=" Model & Data" 
       step="3" 
       duration="5">
-
+      <h2>Wide+Deep Neural Model</h2>
+      <p>This approach of two neuralnets merged as one combines the strengths of memorization and generalization. It's useful for generic large-scale regression and classification problems with sparse input features (e.g., categorical features with a large number of possible feature values). If you're interested in learning more about how Wide & Deep Learning works, please check out google´s research paper.</p>
+      <p> The wide model responds to logistic regression with sparse features and transformations operations and the deep model stands for feed-forward neural network with an embedding layer and several hidden layers <p>
       <h2>Categorical and Continuous Variables</h2>
       <p>Categorical variables are also known as discrete or qualitative variables. Categorical variables can be further categorized as either nominal, ordinal or dichotomous. Nominal variables are variables that have two or more categories, but which do not have an intrinsic order.</p>
 
@@ -309,7 +311,7 @@ m = tf.contrib.learn.DNNLinearCombinedClassifier(
     linear_feature_columns=wide_columns,
     dnn_feature_columns=deep_columns,
     dnn_hidden_units=[100, 50],
-    dnn_activation_fn=relu ,
+    dnn_activation_fn= tf.nn.relu ,
     enable_centered_bias=True))
 
       </code></pre>
@@ -324,6 +326,7 @@ m = tf.contrib.learn.DNNLinearCombinedClassifier(
 <li>The accuracy of the model is 80.5 %</li>
 <li>How changing the parameters influences the accuracy of the model, training_steps or...</li>
 <li>Testing character</li>
+<li>Opening the model in Tensorboard</li>
       </ol>
 
     </google-codelab-step>
