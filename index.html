@@ -56,6 +56,8 @@
 
       <h2 class="checklist">What You&#39;ll Need</h2>
       <ul>
+        <li>A computer connected to the internet with Python2.7 installed </li>
+        <li>The libraries sklearn, pandas , numpy installed </li>
         <li>A basic understanding of python and neural nets</li>
         <li>A fast computer running OS X or Linux</li>
         <li>A fair amount of time</li>
@@ -298,7 +300,19 @@ m = tf.contrib.learn.DNNLinearCombinedClassifier(
     dnn_hidden_units=[100, 50])
 
       </code></pre>
+      <p>This classifier takes two neurons with 100 and 50 hidden units each. We can use several other features for customizing this model that go from the hidden units, activaction function and optimizer. The accuracy of this model is 80 % . Below you can find another customized classifier </p>
+       <pre><code>
+import tempfile
+model_dir = tempfile.mkdtemp()
+m = tf.contrib.learn.DNNLinearCombinedClassifier(
+    model_dir=model_dir,
+    linear_feature_columns=wide_columns,
+    dnn_feature_columns=deep_columns,
+    dnn_hidden_units=[100, 50],
+    dnn_activation_fn=relu ,
+    enable_centered_bias=True))
 
+      </code></pre>
     </google-codelab-step>
 
     <!-- STEP 5 -->
@@ -307,7 +321,7 @@ m = tf.contrib.learn.DNNLinearCombinedClassifier(
       step="5" 
       duration="5">
       <ol>
-<li>The accuracy of the model</li>
+<li>The accuracy of the model is 80.5 %</li>
 <li>How changing the parameters influences the accuracy of the model, training_steps or...</li>
 <li>Testing character</li>
       </ol>
