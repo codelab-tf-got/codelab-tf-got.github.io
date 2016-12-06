@@ -1,0 +1,326 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+    
+    <meta name="robots" content="noindex">
+
+    <title>Discover what GOT Character will die next with TensorFlow</title>
+    <meta name="description" content="who-will-die-got-tensorflow-codelab description">
+
+    
+    <link rel="manifest" href="/manifest.json">
+
+    <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="/bower_components/codelab-components/google-codelab-elements.html">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+    <style>
+      body {
+        font-family: "Roboto",sans-serif;
+        background-color: #e0e0e0;
+      }
+    </style>
+  </head>
+  <body>
+
+  <google-codelab title="Discover what GOT Character will die next with TensorFlow" environment="web" feedback-link="https://github.com/codelab-tf-got/codelab-tf-got.github.io/issues" last-updated="2016-12-01">
+
+    
+    <google-codelab-step label="Introduction" step="1" duration="5">
+      <p>
+      
+      <img src="codelab-logo.png" alt="TensorFlow GOT"> 
+
+      <a href="http://tensorflow.org/" target="_blank" rel="noopener">TensorFlow</a> is a an open source library for numerical computation, specializing in machine learning applications. In this codelab, you will learn how to install and run TensorFlow on a single machine, and will predict deaths on Game of Thrones data using the tutorial Wide+Deep Learning Network.</p>
+      <h2>What are we going to be building?</h2>
+      <p>
+      In this lab, we combine the strengths of Wide and Deep Neural Network modelling to produce a prediction model on whether a Game of Thrones character may die.</p>
+      <h2 class="checklist">What You'll Learn</h2>
+
+      <ul class="checklist">
+        <li>Familiarize yourself with Tensorflow  </li>
+        <li>How to select features for the wide part: choose the sparse base columns and crossed columns you want to use.</li>
+        <li>Select features for the deep part: choose the continuous columns, the embedding dimension for each categorical column, and the hidden layer sizes.</li>
+        <li>How to design the Wide+Deep Learning TensorFlow model </li>
+        <li>Put them all together in a Wide &amp; Deep model (DNNLinearCombinedClassifier).</li>
+      </ul>
+
+      <h2 class="checklist">What You'll Need</h2>
+      <ul>
+        <li>A computer connected to the internet with Python2.7 installed </li>
+        <li>The libraries sklearn, pandas , numpy installed </li>
+        <li>A basic understanding of python and neural nets</li>
+        <li>A fast computer running OS X or Linux</li>
+        <li>A fair amount of time</li>
+      </ul>
+
+      <h2 class="checklist">The Goal</h2>
+      <ul>
+        <li>To made a classification model </li>
+        <li>Predict the next character death probability in Game of Thrones</li>
+      </ul>
+
+      <aside class="special">
+        <p>
+        <strong>Note:</strong>  This codelab has quiet periods of downloading and training. During those times, it might be a fun idea to play with the <a href="http://playground.tensorflow.org/" target="_blank" rel="noopener">TensorFlow Playground!</a>
+        </p>
+      </aside>
+
+    </google-codelab-step>
+
+
+    <google-codelab-step label="Setup" step="2" duration="5">
+
+      <h2>On a Docker Image</h2>
+
+      <p>if you were going to perform image processing, GPU enabled installation...?. For more information, visit <a href="https://www.tensorflow.org/versions/r0.12/get_started/os_setup.html#docker-installation" target="_blank" rel="noopener">the Docker installation guideliness in the TensorFlow documentation.</a></p>
+
+      <h2>Using virtualenv</h2>
+      <p>
+        As we are not going to process images, we recommend for this codelab virtualenv installation, because it will take you less time – if you were going to perform image processing, GPU enabled installation would be worth it.
+      </p>
+      <aside class="special">
+        <p>
+          <strong>What are pip and virtualenv?</strong>
+        </p>
+        <p>
+          <a href="https://pip.pypa.io/en/stable/" target="_blank" rel="noopener">pip</a> is a Python's package management tool, and <a href="http://docs.python-guide.org/en/latest/dev/virtualenvs/" target="_blank" rel="noopener">virtualenv</a> is just a tool to keep the dependencies required by different Python projects in separate places. The Virtualenv installation of TensorFlow will not override pre-existing version of the Python packages needed by TensorFlow.
+        </p>
+      </aside>
+
+      <p>
+        With <code>virtualenv</code> the installation process is the following:
+      </p>
+
+      <ol>
+        <li>Install <code>pip</code> and <code>virtualenv</code>.</li>
+        <li>Create a <code>virtualenv</code> environment.</li>
+        <li>Activate the <code>virtualenv</code> environment and install TensorFlow in it.</li>
+        <li>After the install you will activate the <code>virtualenv</code> environment each time you want to use TensorFlow.</li>
+      </ol>
+
+      <h2>Install pip and virtualenv</h2>
+<pre><code>
+# For Ubuntu/Linux 64-bit
+sudo apt-get install python-pip python-dev python-virtualenv
+
+# For Mac OS X
+sudo easy_install pip
+sudo pip install --upgrade virtualenv
+</code></pre>
+
+      <h2>Create a Virtualenv environment</h2>
+      <p>Create a <code>virtualenv</code> environment in the directory <code>~/tensorflow</code> (for Linux &amp; MacOS):</p>
+      <pre><code>virtualenv --system-site-packages ~/tensorflow</code></pre>
+
+      <h2>Activate the environment</h2>
+<pre><code>
+# if you are using bash
+source ~/tensorflow/bin/activate
+
+# if you are using csh
+source ~/tensorflow/bin/activate.csh
+</code></pre>
+
+  <h2>Install TensorFlow in the environment</h2>
+  <p>Now that you have created the environment, install TensorFlow just as you would for a regular <code>pip</code> installation.</p>
+
+  <aside class="special">
+        <p>
+          <strong>Choose the right binary to install</strong>
+        </p>
+        <p>
+          Depending on your <strong>system architecture</strong> and <strong>python's version</strong>, you will need one or another version of the binaries. We'll just add an environtmen variable <code>TF_BINARY_URL</code> that will contain the address where the binary is located, and then use <code>python</code> to install it. For a complete/updated list, visit <a href="https://www.tensorflow.org/versions/r0.12/get_started/os_setup.html#virtualenv-installation" target="_blank" rel="noopener">TensorFlow's installing guideliness</a>.
+        </p>
+        <p>
+          To figure out your python's version, simply type in <code>python -V</code>.</p>
+      </aside>
+<p>Copy the version that fit's your architecture and python's version:</p>
+<pre><code>
+# Ubuntu/Linux 64-bit, CPU only, Python 2.7
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp27-none-linux_x86_64.whl
+
+# Ubuntu/Linux 64-bit, GPU enabled, Python 2.7
+# Requires CUDA toolkit 8.0 and CuDNN v5. For other versions, see "Installing from sources" below.
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-0.12.0rc0-cp27-none-linux_x86_64.whl
+
+# Mac OS X, CPU only, Python 2.7:
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-0.12.0rc0-py2-none-any.whl
+
+# Mac OS X, GPU enabled, Python 2.7:
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/gpu/tensorflow_gpu-0.12.0rc0-py2-none-any.whl
+
+# Ubuntu/Linux 64-bit, CPU only, Python 3.4
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp34-cp34m-linux_x86_64.whl
+
+# Ubuntu/Linux 64-bit, GPU enabled, Python 3.4
+# Requires CUDA toolkit 8.0 and CuDNN v5. For other versions, see "Installing from sources" below.
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-0.12.0rc0-cp34-cp34m-linux_x86_64.whl
+
+# Ubuntu/Linux 64-bit, CPU only, Python 3.5
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp35-cp35m-linux_x86_64.whl
+
+# Ubuntu/Linux 64-bit, GPU enabled, Python 3.5
+# Requires CUDA toolkit 8.0 and CuDNN v5. For other versions, see "Installing from sources" below.
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-0.12.0rc0-cp35-cp35m-linux_x86_64.whl
+
+# Mac OS X, CPU only, Python 3.4 or 3.5:
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-0.12.0rc0-py3-none-any.whl
+
+# Mac OS X, GPU enabled, Python 3.4 or 3.5:
+export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/gpu/tensorflow_gpu-0.12.0rc0-py3-none-any.whl
+</code></pre>
+<p>If your requirement's are listed above, you can also check out the <a href="https://www.tensorflow.org/versions/r0.12/get_started/os_setup.html#installing-from-sources" target="_blank" rel="noopener">installing from sources section</a> in TensorFlow's installing guideliness.</p>
+
+<h2>Finally, install TensorFlow</h2>
+
+<p>Once you have setted the <code>$TF_BINARY_URL</code> env variable with the url of the binary that fits your system, simply install it with <code>pip</code></p>
+
+<pre><code>
+# Python 2
+pip install --upgrade $TF_BINARY_URL
+
+# Python 3
+pip3 install --upgrade $TF_BINARY_URL
+</code></pre>
+<aside class="special">
+<p>Now you are all set-up, and ready to start rocking with TensorFlow!</p></aside>
+      
+
+
+    </google-codelab-step>
+
+    
+    <google-codelab-step label=" Model &amp; Data" step="3" duration="5">
+      <h2>Wide+Deep Neural Model</h2>
+      <p>This approach of two neuralnets merged as one combines the strengths of memorization and generalization. It's useful for generic large-scale regression and classification problems with sparse input features (e.g., categorical features with a large number of possible feature values). If you're interested in learning more about how Wide &amp; Deep Learning works, please check out google´s research paper.</p>
+      <p> The wide model responds to logistic regression with sparse features and transformations operations and the deep model stands for feed-forward neural network with an embedding layer and several hidden layers </p><p>
+      </p><h2>Categorical and Continuous Variables</h2>
+      <p>Categorical variables are also known as discrete or qualitative variables. Categorical variables can be further categorized as either nominal, ordinal or dichotomous. Nominal variables are variables that have two or more categories, but which do not have an intrinsic order.</p>
+
+      <p>The CSV takes an expanded view on character deaths from GOT, including the listed columns that give an overall basic information such as name, title, age and date of Birth. But also dives into the the alive relationships that the character holds, the book in which the character appears</p>
+<aside class="special">
+<p>We are going to take care of the following:</p>
+      <p>“S.No, Alive, Name , Title, male, culture, dateOfBirth, mother, father, heir, house, spouse, book1, book2, book3, book4, book5, isAliveMother, isAliveFather, isAliveHeir, isAliveSpouse, isMarried, isNoble , age, numDeadRelations, boolDeadRelations, isPopular, popular, isAlive”</p>
+</aside>
+      <p>
+        Note that not all columns of the dataset have been selected for this tutorial. There have been some excluded data due to the relevance or not for this exercise.
+      </p>
+
+<pre><code>
+CATEGORICAL_COLUMNS = ["alive", "title", "male", "culture",
+                       "house", "spouse", "isAliveMother", "isAliveFather", "isAliveHeir",
+                       "isAliveSpouse", "isMarried", "isNoble", "numDeadRelations",
+                       "boolDeadRelations", "isPopular" , "popularity"]
+
+CONTINUOUS_COLUMNS = ["name", "dateOfBirth",  "mother", "father",
+                      "heir", "book1", "book2", "book3", "book4", "book5", "age",
+                      "isAlive", "house", "title", "numDeadRelations"]
+</code></pre>
+
+      <h2>Define Base Feature Columns</h2>
+      <p>First, let's define the base categorical and continuous feature columns that we'll use. These base columns will be the building blocks used by both the wide part and the deep part of the model.</p>
+<pre><code>
+# Generalizing  Transformations 
+...
+column[i] = tf.contrib.layers.real_valued_column(column_name)
+...
+age_buckets = tf.contrib.layers.bucketized_column(age,
+                                                  boundaries=[
+                                                      18, 25, 30, 35, 40, 45,
+                                                      50, 55, 60, 65
+                                                  ])
+</code></pre>
+
+      <h2>The Wide Model: Linear Model with Crossed Feature Columns</h2>
+      <p>The wide model is a linear model with a wide set of sparse and crossed feature columns:</p>
+<pre><code>
+# Wide columns and deep columns.
+wide_columns = [name, dateOfBirth, DateoFdeath, mother, father, heir, book1, book2,
+                book3, book4, book5, age, isAlive
+                tf.contrib.layers.crossed_column([house, title],
+                                                 hash_bucket_size=int(1e4)),
+                tf.contrib.layers.crossed_column(
+                    [age_buckets, house, title],
+                    hash_bucket_size=int(1e6)),
+                tf.contrib.layers.crossed_column([numDeadRelations, title],
+                                                 hash_bucket_size=int(1e4))]
+
+</code></pre>
+
+ <h2>The Deep Model: Neural Network with Embeddings</h2>
+      <p>The deep model is a feed-forward neural network, as shown in the previous figure. Each of the sparse, high-dimensional categorical features are first converted into a low-dimensional and dense real-valued vector, often referred to as an embedding vector. These low-dimensional dense embedding vectors are concatenated with the continuous features, and then fed into the hidden layers of a neural network in the forward pass:</p>
+<pre><code>
+  deep_columns = [
+      tf.contrib.layers.embedding_column(title, dimension=8),
+      tf.contrib.layers.embedding_column(house, dimension=8),
+      tf.contrib.layers.embedding_column(culture, dimension=8),
+      tf.contrib.layers.embedding_column(isAliveNoble, dimension=8),
+      tf.contrib.layers.embedding_column(numberDeadRelations,
+                                         dimension=8),
+      tf.contrib.layers.embedding_column(popularity, dimension=8),
+      male,
+      spouse,
+      isPopular,
+      spouse,
+      isMarried,
+  ]
+</code></pre>
+    </google-codelab-step>
+
+    
+    <google-codelab-step label="Combining Wide and Deep Models into One" step="4" duration="5">
+
+
+      <p>The wide models and deep models are combined by summing up their final output log odds as the prediction, then feeding the prediction to a logistic loss function. All the graph definition and variable allocations have already been handled for you under the hood, so you simply need to create a DNNLinearCombinedClassifier:</p>
+
+      <pre><code>
+import tempfile
+model_dir = tempfile.mkdtemp()
+m = tf.contrib.learn.DNNLinearCombinedClassifier(
+    model_dir=model_dir,
+    linear_feature_columns=wide_columns,
+    dnn_feature_columns=deep_columns,
+    dnn_hidden_units=[100, 50])
+
+      </code></pre>
+      <p>This classifier takes two neurons with 100 and 50 hidden units each. We can use several other features for customizing this model that go from the hidden units, activaction function and optimizer. The accuracy of this model is 80 % . Below you can find another customized classifier </p>
+       <pre><code>
+import tempfile
+model_dir = tempfile.mkdtemp()
+m = tf.contrib.learn.DNNLinearCombinedClassifier(
+    model_dir=model_dir,
+    linear_feature_columns=wide_columns,
+    dnn_feature_columns=deep_columns,
+    dnn_hidden_units=[100, 50],
+    dnn_activation_fn= tf.nn.relu ,
+    enable_centered_bias=True))
+
+      </code></pre>
+    </google-codelab-step>
+
+    
+    <google-codelab-step label="Conclusions" step="5" duration="5">
+      <ol>
+<li>The accuracy of the model is 80.5 %</li>
+<li>How changing the parameters influences the accuracy of the model, training_steps or...</li>
+<li>Testing character</li>
+<li>Opening the model in Tensorboard</li>
+      </ol>
+
+    </google-codelab-step>
+
+
+  </google-codelab>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-88304212-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+    
+  
+
+</body></html>
