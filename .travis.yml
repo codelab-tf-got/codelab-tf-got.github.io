@@ -17,8 +17,8 @@ script:
 - export SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
 - export SHA=`git rev-parse --verify HEAD`
 - npm install polymer-cli@next bower
-- "./node_modules/.bin/bower install"
-- "./node_modules/.bin/polymer build"
+- ./node_modules/.bin/bower install
+- ./node_modules/.bin/polymer build || true
 - bash .ci/deploy.sh || exit $?
 - openssl aes-256-cbc -K $encrypted_7842780245dc_key -iv $encrypted_7842780245dc_iv
   -in .ci/deploy_key.enc -out .ci/deploy_key -d
